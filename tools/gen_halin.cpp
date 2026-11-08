@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
     {
         halin::Writer w(out);
         w.put("c random Halin graph, N="); w.put(static_cast<long long>(N));
-        w.put(" seed="); w.put(static_cast<long long>(seed)); w.put('\n');
+        w.put(" seed="); w.put(seed); w.put('\n');
         w.put("p tw "); w.put(static_cast<long long>(n)); w.put(' ');
         w.put(static_cast<long long>(edges.size())); w.put('\n');
         for (auto [a, b] : edges) {

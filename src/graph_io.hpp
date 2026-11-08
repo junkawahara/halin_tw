@@ -155,7 +155,12 @@ public:
         while (*s) put(*s++);
     }
     void put(long long x) {
-        if (x < 0) { put('-'); x = -x; }
+        // negate in unsigned arithmetic so that LLONG_MIN is handled
+        unsigned long long u = static_cast<unsigned long long>(x);
+        if (x < 0) { put('-'); u = 0 - u; }
+        put(u);
+    }
+    void put(unsigned long long x) {
         char tmp[24];
         int k = 0;
         do { tmp[k++] = static_cast<char>('0' + x % 10); x /= 10; } while (x);
