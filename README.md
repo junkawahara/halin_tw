@@ -120,9 +120,16 @@ Every step runs in O(n) time.
   caterpillar of depth 500,000 is processed in well under a second.
 * In the paper, node `A` (or `B`) of a call is "identified with" node `R` of
   the invoked call. Here the child call simply receives `A` (or `B`) as its
-  `R`, so no bag is duplicated.
+  `R`, so no extra node is created for `R`.
 * Repeated vertices inside a bag are removed. For example, in the `i = j`
   leaf case of `AH_2`, `omega_2(v, j)` equals the leaf itself.
+* The output is the decomposition of the paper, which is not minimal. The
+  bags of `A` and `B` are always subsets of the bag of their parent `S`.
+  After repeated vertices are removed, adjacent bags can even be equal. For
+  example, the output for K4 has 7 bags, although a single bag would do. In
+  the random `gen_halin` instances we measured (one each with N in
+  [10², 10³−1], [10³, 10⁴−1] and [10⁴, 10⁵−1]), about 62% of the bags were
+  subsets of an adjacent bag.
 * Before running AH-Td, `halinTreeDecomposition` checks that the given
   tree/cycle pair is valid: the skeleton is a tree without degree-2 vertices,
   the leaf cycle is a single cycle, and the leaves of every subtree are
