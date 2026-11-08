@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "../src/eppstein.hpp"
+#include "../src/graph_io.hpp"
 #include "../src/htd.hpp"
 
 using Edges = std::vector<std::pair<int, int>>;
@@ -180,8 +181,13 @@ bool isSimple(int n, const Edges& E) {
 }  // namespace
 
 int main(int argc, char** argv) {
-    long long iters = argc > 1 ? std::atoll(argv[1]) : 20000;
-    unsigned long long seed = argc > 2 ? std::strtoull(argv[2], nullptr, 10) : 1;
+    long long iters = 20000;
+    unsigned long long seed = 1;
+    if (argc > 3 || (argc > 1 && (!halin::parseLongArg(argv[1], iters) || iters < 0)) ||
+        (argc > 2 && !halin::parseULongArg(argv[2], seed))) {
+        std::fprintf(stderr, "usage: %s [iterations >= 0] [seed >= 0]\n", argv[0]);
+        return 2;
+    }
     std::mt19937_64 rng(seed);
     long long stats[2][2] = {{0, 0}, {0, 0}};  // [brute][algo]
     long long failures = 0;
