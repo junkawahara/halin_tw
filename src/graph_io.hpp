@@ -112,10 +112,10 @@ inline Graph parseGr(const std::string& data) {
         if (c == 0 || c == 'c') continue;
         if (c == 'p') {
             if (seenP) throw std::runtime_error("duplicate p line");
-            in.nextToken(tok);  // "p"
-            if (!in.nextToken(tok) || tok != "tw") throw std::runtime_error("expected 'p tw n m'");
+            if (!in.nextToken(tok) || tok != "p" || !in.nextToken(tok) || tok != "tw")
+                throw std::runtime_error("expected 'p tw n m'");
             long long n;
-            if (!in.nextLong(n) || !in.nextLong(m) || n < 0 || m < 0)
+            if (!in.nextLong(n) || !in.nextLong(m) || !in.atLineEnd() || n < 0 || m < 0)
                 throw std::runtime_error("expected 'p tw n m'");
             // vertices are int and arrays of size n + 1 are allocated with int sizes
             if (n > kMaxVertices) throw std::runtime_error("too many vertices (n > " + std::to_string(kMaxVertices) + ")");
