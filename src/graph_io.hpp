@@ -4,6 +4,7 @@
 // decomposition (.td) formats.
 #pragma once
 
+#include <cerrno>
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
@@ -34,6 +35,31 @@ inline std::string readAll(const std::string& path) {
     if (!isStdin) std::fclose(f);
     if (failed) throw std::runtime_error("cannot read file: " + (isStdin ? std::string("stdin") : path));
     return data;
+}
+
+// Parses all of the command-line argument s as a decimal integer (optional
+// sign, then digits). Returns false on any other character, on empty input
+// and on overflow.
+inline bool parseLongArg(const char* s, long long& v) {
+    const char* p = (*s == '+' || *s == '-') ? s + 1 : s;
+    if (*p < '0' || *p > '9') return false;
+    errno = 0;
+    char* end = nullptr;
+    long long x = std::strtoll(s, &end, 10);
+    if (*end != '\0' || errno == ERANGE) return false;
+    v = x;
+    return true;
+}
+
+// Same as parseLongArg for an unsigned value; no sign is allowed.
+inline bool parseULongArg(const char* s, unsigned long long& v) {
+    if (*s < '0' || *s > '9') return false;
+    errno = 0;
+    char* end = nullptr;
+    unsigned long long x = std::strtoull(s, &end, 10);
+    if (*end != '\0' || errno == ERANGE) return false;
+    v = x;
+    return true;
 }
 
 // Simple line-oriented tokenizer over an in-memory buffer.

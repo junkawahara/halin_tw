@@ -34,8 +34,13 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "usage: %s <Nmin> <Nmax> <seed> [-o out.gr]\n", argv[0]);
         return 1;
     }
-    long long nmin = std::atoll(pos[0]), nmax = std::atoll(pos[1]);
-    unsigned long long seed = std::strtoull(pos[2], nullptr, 10);
+    long long nmin, nmax;
+    unsigned long long seed;
+    if (!halin::parseLongArg(pos[0], nmin) || !halin::parseLongArg(pos[1], nmax) ||
+        !halin::parseULongArg(pos[2], seed)) {
+        std::fprintf(stderr, "error: Nmin and Nmax must be integers and seed a non-negative integer\n");
+        return 1;
+    }
     if (nmin < 3 || nmax < nmin) {
         std::fprintf(stderr, "error: need 3 <= Nmin <= Nmax\n");
         return 1;
