@@ -14,6 +14,9 @@
 
 namespace halin {
 
+// Largest vertex count accepted by parseGr.
+constexpr long long kMaxVertices = INT_MAX - 1;
+
 struct Graph {
     int n = 0;                              // vertices are 0 .. n-1
     std::vector<std::pair<int, int>> edges; // 0-indexed endpoints
@@ -114,6 +117,8 @@ inline Graph parseGr(const std::string& data) {
             long long n;
             if (!in.nextLong(n) || !in.nextLong(m) || n < 0 || m < 0)
                 throw std::runtime_error("expected 'p tw n m'");
+            // vertices are int and arrays of size n + 1 are allocated with int sizes
+            if (n > kMaxVertices) throw std::runtime_error("too many vertices (n > " + std::to_string(kMaxVertices) + ")");
             g.n = static_cast<int>(n);
             g.edges.reserve(static_cast<size_t>(m));
             seenP = true;
