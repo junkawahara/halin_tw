@@ -11,6 +11,7 @@
 // maximum bag size. Prints "valid width=W" and exits 0 on success, otherwise
 // prints the first violation and exits 1.
 #include <algorithm>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -22,6 +23,10 @@
 #include "../src/graph_io.hpp"
 
 namespace {
+
+// Bag ids are stored as int (bag markers as -id), and arrays of size
+// numBags + 1 are allocated with int sizes.
+constexpr long long kMaxBags = INT_MAX - 1;
 
 [[noreturn]] void invalid(const std::string& msg) {
     std::printf("invalid: %s\n", msg.c_str());
@@ -86,6 +91,7 @@ int main(int argc, char** argv) {
                     invalid("malformed s line");
                 if (declaredN != g.n) invalid("s line vertex count does not match graph");
                 if (numBags < 1) invalid("decomposition has no bags");
+                if (numBags > kMaxBags) invalid("too many bags (more than " + std::to_string(kMaxBags) + ")");
                 bagSeen.assign(numBags, 0);
                 continue;
             }
