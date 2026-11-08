@@ -30,7 +30,9 @@ inline std::string readAll(const std::string& path) {
     char buf[1 << 16];
     size_t got;
     while ((got = std::fread(buf, 1, sizeof(buf), f)) > 0) data.append(buf, got);
-    if (f != stdin) std::fclose(f);
+    const bool failed = std::ferror(f) != 0, isStdin = f == stdin;
+    if (!isStdin) std::fclose(f);
+    if (failed) throw std::runtime_error("cannot read file: " + (isStdin ? std::string("stdin") : path));
     return data;
 }
 
