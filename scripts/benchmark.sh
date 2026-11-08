@@ -20,6 +20,7 @@ declare -A LO=([small]=100 [medium]=1000 [large]=10000 [giant]=100000)
 declare -A HI=([small]=999 [medium]=9999 [large]=99999 [giant]=999999)
 
 seed=1
+failures=0
 for group in small medium large giant; do
   for ((k = 1; k <= PER_GROUP; k++)); do
     name="${group}_$(printf %02d "$k")"
@@ -35,9 +36,16 @@ for group in small medium large giant; do
     trec=$(sed -n 's/.*time_recognition=\([0-9.]*\).*/\1/p' <<<"$stats")
     thtd=$(sed -n 's/.*time_htd=\([0-9.]*\).*/\1/p' <<<"$stats")
     width=$(sed -n 's/.*width=\([0-9]*\).*/\1/p' <<<"$stats")
-    if "$RUN" "$BIN/td_validate" "$gr" "$td" --expect-width 3 >/dev/null; then valid=yes; else valid=NO; fi
+    if vout=$("$RUN" "$BIN/td_validate" "$gr" "$td" --expect-width 3 2>&1); then
+      valid=yes
+      rm -f "$td"
+    else
+      # keep the decomposition for inspection; the run fails at the end
+      valid=NO
+      failures=$((failures + 1))
+      echo "error: $name: validation failed (kept $td): $vout" >&2
+    fi
     printf '%s,%s,%s,%s,%s,%s,%.4f,%s,%s\n' "$group" "$name" "$n" "$m" "$trec" "$thtd" "$wall" "$width" "$valid" | tee -a "$RESULTS"
-    rm -f "$td"
   done
 done
 
@@ -48,3 +56,8 @@ awk -F, 'NR > 1 { c[$1]++; r[$1] += $5; h[$1] += $6; w[$1] += $7; n[$1] += $3; i
         split("small medium large giant", gs, " ");
         for (i = 1; i <= 4; i++) { g = gs[i]; if (!c[g]) continue;
           printf "%-8s %10.0f %14.6f %10.6f %12.4f %8d\n", g, n[g]/c[g], r[g]/c[g], h[g]/c[g], w[g]/c[g], bad[g] + 0 } }' "$RESULTS"
+
+if ((failures > 0)); then
+  echo "error: $failures instance(s) failed validation" >&2
+  exit 1
+fi

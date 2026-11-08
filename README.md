@@ -153,6 +153,8 @@ Section 6 of the paper. N is drawn uniformly from [10², 10³−1] (Small),
 [10³, 10⁴−1] (Medium), [10⁴, 10⁵−1] (Large) or [10⁵, 10⁶−1] (Giant).
 The script runs `halin_td` on every instance and validates each output with
 `td_validate`. All runs go through `scripts/run_limited.sh` (32 GB memory, 10 minutes).
+If any output fails validation, the script keeps that `.td` file, prints the
+validator's message and exits with status 1 after all instances have run.
 
 Results for 10 instances per group on an Intel Core i3-1115G4 (3.0 GHz),
 GCC 15.2 with `-O2`. Times are averages in seconds. *Recognition* is
