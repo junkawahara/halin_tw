@@ -52,6 +52,7 @@ TreeDecomposition halinTreeDecomposition(int n, const std::vector<std::pair<int,
     std::vector<int> treeDeg(n, 0), cyc(2 * static_cast<size_t>(n), -1);
     long long treeEdges = 0;
     for (auto [a, b] : edges) {
+        if (a < 0 || b < 0 || a >= n || b >= n) fail("edge endpoint out of range");
         if (isLeaf[a] && isLeaf[b]) {
             int* ca = &cyc[2 * static_cast<size_t>(a)];
             int* cb = &cyc[2 * static_cast<size_t>(b)];

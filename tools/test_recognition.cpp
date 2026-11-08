@@ -17,6 +17,7 @@
 #include <numeric>
 #include <random>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -240,6 +241,20 @@ int main(int argc, char** argv) {
             Edges w;
             for (int i = 0; i < k; ++i) { w.emplace_back(k, i); w.emplace_back(i, (i + 1) % k); }
             runCase(k + 1, w, "wheel");
+        }
+        // edges with out-of-range endpoints must be rejected without memory errors
+        for (const Edges& bad : {Edges{{0, 4}, {0, 2}, {0, 3}, {1, 2}, {1, 3}, {2, 3}},
+                                 Edges{{0, -1}, {0, 2}, {0, 3}, {1, 2}, {1, 3}, {2, 3}}}) {
+            if (halin::recognizeHalin(4, bad).isHalin) {
+                ++failures;
+                std::printf("BAD ENDPOINT accepted by recognizeHalin\n");
+            }
+            try {
+                halin::halinTreeDecomposition(4, bad, {0, 1, 1, 1});
+                ++failures;
+                std::printf("BAD ENDPOINT accepted by halinTreeDecomposition\n");
+            } catch (const std::runtime_error&) {
+            }
         }
     }
 

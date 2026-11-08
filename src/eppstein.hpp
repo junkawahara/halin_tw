@@ -23,6 +23,7 @@ struct HalinRecognition {
 // Decides whether the simple graph (n, edges) is a Halin graph. On success,
 // isLeaf describes one valid decomposition: edges with both endpoints marked
 // as leaves form the leaf cycle C; all remaining edges form the skeleton tree.
+// Edges with an endpoint outside [0, n) make the graph rejected.
 HalinRecognition recognizeHalin(int n, const std::vector<std::pair<int, int>>& edges);
 
 }  // namespace halin

@@ -119,6 +119,7 @@ HalinRecognition recognizeHalin(int n, const std::vector<std::pair<int, int>>& e
     {
         std::vector<int> deg(n, 0);
         for (auto [a, b] : edges) {
+            if (a < 0 || b < 0 || a >= n || b >= n) return reject("edge endpoint out of range");
             if (a == b) return reject("self-loop");
             ++deg[a];
             ++deg[b];
