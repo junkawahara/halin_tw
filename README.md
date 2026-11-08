@@ -49,9 +49,14 @@ bin/halin_td [-o out.td] [--stats] [input.gr]
 
 * Reads the graph from `input.gr` (or stdin) and writes the decomposition to
   `out.td` (or stdout).
-* `--stats` prints sizes, the number of reductions and timings to stderr.
+* The PACE format allows self-loops and repeated edges. They do not change
+  the tree decompositions of a graph, so `halin_td` removes them and works on
+  the resulting simple graph. Its decomposition is also a tree decomposition
+  of the input.
+* `--stats` prints sizes, the number of removed self-loops and repeated
+  edges, the number of reductions and timings to stderr.
 * Exit status: `0` success, `1` usage or I/O error, `2` the input is not a
-  Halin graph.
+  Halin graph (after removing self-loops and repeated edges).
 
 Example:
 

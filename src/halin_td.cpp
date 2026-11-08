@@ -7,7 +7,9 @@
 //
 // Without input file the graph is read from stdin; without -o the
 // decomposition is written to stdout. --stats prints timings to stderr.
-// Exit codes: 0 success, 1 usage/I-O error, 2 input is not a Halin graph.
+// Self-loops and repeated edges, which the PACE format allows, are ignored.
+// Exit codes: 0 success, 1 usage/I-O error, 2 input is not a Halin graph
+// (after removing self-loops and repeated edges).
 #include <chrono>
 #include <cstdio>
 #include <cstring>
@@ -46,10 +48,19 @@ int main(int argc, char** argv) {
     try {
         auto t0 = Clock::now();
         halin::Graph g = halin::parseGr(halin::readAll(inPath));
+        const size_t inputEdges = g.edges.size();
         double tRead = secondsSince(t0);
 
         auto t1 = Clock::now();
         halin::HalinRecognition rec = halin::recognizeHalin(g.n, g.edges);
+        size_t removedEdges = 0;
+        if (!rec.isHalin && rec.notSimple) {
+            // Loops and parallel edges do not change tree decompositions: a
+            // tree decomposition of the simple graph is one of the input too.
+            // Simplifying only here keeps simple inputs free of this cost.
+            removedEdges = halin::removeLoopsAndMultiEdges(g);
+            rec = halin::recognizeHalin(g.n, g.edges);
+        }
         double tRecog = secondsSince(t1);
         if (!rec.isHalin) {
             std::fprintf(stderr, "error: input is not a Halin graph (%s)\n", rec.reason.c_str());
@@ -90,9 +101,9 @@ int main(int argc, char** argv) {
             long long leaves = 0;
             for (char c : rec.isLeaf) leaves += c;
             std::fprintf(stderr,
-                         "n=%d m=%zu leaves=%lld D3a=%lld D3b=%lld nodes=%d width=%d\n"
+                         "n=%d m=%zu removed=%zu leaves=%lld D3a=%lld D3b=%lld nodes=%d width=%d\n"
                          "time_read=%.6f time_recognition=%.6f time_htd=%.6f time_write=%.6f\n",
-                         g.n, g.edges.size(), leaves, rec.reductionsD3a, rec.reductionsD3b, td.numNodes(),
+                         g.n, inputEdges, removedEdges, leaves, rec.reductionsD3a, rec.reductionsD3b, td.numNodes(),
                          td.maxBagSize() - 1, tRead, tRecog, tTd, tWrite);
         }
     } catch (const std::exception& e) {

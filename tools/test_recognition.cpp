@@ -262,6 +262,46 @@ int main(int argc, char** argv) {
             } catch (const std::runtime_error&) {
             }
         }
+        // a Halin graph plus a self-loop / a repeated edge is rejected with
+        // notSimple and accepted after simplification (as halin_td does)
+        {
+            Edges w6;
+            for (int i = 0; i < 6; ++i) { w6.emplace_back(6, i); w6.emplace_back(i, (i + 1) % 6); }
+            for (const auto& extra : {std::pair<int, int>{2, 2}, std::pair<int, int>{1, 0}}) {
+                halin::Graph g{7, w6};
+                g.edges.push_back(extra);
+                halin::HalinRecognition rec = halin::recognizeHalin(g.n, g.edges);
+                if (rec.isHalin || !rec.notSimple) { ++failures; std::printf("NON-SIMPLE not flagged\n"); }
+                if (halin::removeLoopsAndMultiEdges(g) != 1 || !halin::recognizeHalin(g.n, g.edges).isHalin) {
+                    ++failures;
+                    std::printf("SIMPLIFIED wheel rejected\n");
+                }
+            }
+            if (halin::recognizeHalin(6, Edges{{0, 3}, {0, 4}, {0, 5}, {1, 3}, {1, 4}, {1, 5}, {2, 3}, {2, 4}, {2, 5}})
+                    .notSimple) {
+                ++failures;
+                std::printf("simple graph flagged as non-simple\n");
+            }
+        }
+        // removeLoopsAndMultiEdges keeps the first occurrence of each edge, in
+        // order (own generator, so the random cases below do not change)
+        std::mt19937_64 grng(seed + 0x9e3779b97f4a7c15ULL);
+        for (int rep = 0; rep < 2000; ++rep) {
+            halin::Graph g;
+            g.n = 1 + static_cast<int>(grng() % 6);
+            const size_t m = grng() % 20;
+            for (size_t e = 0; e < m; ++e)
+                g.edges.emplace_back(static_cast<int>(grng() % g.n), static_cast<int>(grng() % g.n));
+            Edges expect;
+            std::set<std::pair<int, int>> seen;
+            for (auto [a, b] : g.edges)
+                if (a != b && seen.insert({std::min(a, b), std::max(a, b)}).second) expect.emplace_back(a, b);
+            const size_t removed = halin::removeLoopsAndMultiEdges(g);
+            if (g.edges != expect || removed != m - expect.size()) {
+                ++failures;
+                std::printf("BAD SIMPLIFICATION n=%d m=%zu\n", g.n, m);
+            }
+        }
     }
 
     for (long long it = 0; it < iters; ++it) {

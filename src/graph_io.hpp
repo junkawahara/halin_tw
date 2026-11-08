@@ -4,6 +4,7 @@
 // decomposition (.td) formats.
 #pragma once
 
+#include <algorithm>
 #include <cerrno>
 #include <climits>
 #include <cstdio>
@@ -164,6 +165,41 @@ inline Graph parseGr(const std::string& data) {
     if (static_cast<long long>(g.edges.size()) != m)
         throw std::runtime_error("edge count does not match p line");
     return g;
+}
+
+// Removes self-loops and repeated edges (in either orientation), which the
+// PACE format allows, in O(n + m) time. The first occurrence of every edge is
+// kept and the remaining edges stay in input order. Returns the number of
+// removed edges.
+inline size_t removeLoopsAndMultiEdges(Graph& g) {
+    const size_t m = g.edges.size();
+    const size_t n = static_cast<size_t>(g.n);
+    // bucket the edge ids by their smaller endpoint, in increasing id order
+    std::vector<size_t> start(n + 1, 0);
+    for (auto [a, b] : g.edges)
+        if (a != b) ++start[static_cast<size_t>(std::min(a, b)) + 1];
+    for (size_t v = 0; v < n; ++v) start[v + 1] += start[v];
+    std::vector<size_t> ids(start[n]);
+    {
+        std::vector<size_t> fill(start.begin(), start.end() - 1);
+        for (size_t e = 0; e < m; ++e) {
+            auto [a, b] = g.edges[e];
+            if (a != b) ids[fill[static_cast<size_t>(std::min(a, b))]++] = e;
+        }
+    }
+    std::vector<char> keep(m, 0);
+    std::vector<int> mark(n, -1);
+    for (size_t u = 0; u < n; ++u)
+        for (size_t k = start[u]; k < start[u + 1]; ++k) {
+            const size_t e = ids[k];
+            const int w = std::max(g.edges[e].first, g.edges[e].second);
+            if (mark[w] != static_cast<int>(u)) { mark[w] = static_cast<int>(u); keep[e] = 1; }
+        }
+    size_t out = 0;
+    for (size_t e = 0; e < m; ++e)
+        if (keep[e]) g.edges[out++] = g.edges[e];
+    g.edges.resize(out);
+    return m - out;
 }
 
 // Buffered writer with fast integer formatting. Write errors set the error
