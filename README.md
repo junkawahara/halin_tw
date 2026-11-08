@@ -184,3 +184,9 @@ relabelling. The number of operations is linear in both cases.
 
 This repository is an independent implementation written from the papers.
 It is not the authors' code.
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE) for the full text.
+
+Copyright (c) 2026 Jun Kawahara
