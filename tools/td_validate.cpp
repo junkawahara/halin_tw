@@ -50,7 +50,12 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "usage: %s <graph.gr> <decomposition.td> [--expect-width W]\n", argv[0]);
         return 2;
     }
-    long long expectWidth = argc == 5 ? std::atoll(argv[4]) : -2;
+    const bool checkWidth = argc == 5;
+    long long expectWidth = 0;
+    if (checkWidth && !halin::parseLongArg(argv[4], expectWidth)) {
+        std::fprintf(stderr, "error: --expect-width needs an integer, got '%s'\n", argv[4]);
+        return 2;
+    }
     halin::Graph g;
     std::string tdData;
     try {
@@ -192,7 +197,7 @@ int main(int argc, char** argv) {
         if (inner[v] != occ[v] - 1) invalid("(C3) bags containing vertex " + std::to_string(v + 1) + " are not connected");
 
     long long width = maxSize - 1;
-    if (expectWidth != -2 && width != expectWidth)
+    if (checkWidth && width != expectWidth)
         invalid("width " + std::to_string(width) + " differs from expected " + std::to_string(expectWidth));
     std::printf("valid width=%lld bags=%d\n", width, B);
     return 0;
