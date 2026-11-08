@@ -10,8 +10,10 @@
 // first), header consistency, each bag line, decomposition graph is a tree,
 // (C1) every vertex is in some bag, (C2) every edge is in some bag,
 // (C3) bags containing a vertex induce a connected subtree, and the declared
-// maximum bag size. Prints "valid width=W" and exits 0 on success, otherwise
-// prints the first violation and exits 1.
+// maximum bag size.
+// Exit codes: 0 the decomposition is valid (prints "valid width=W bags=B"),
+// 1 it is invalid (prints the first violation), 2 usage error, or the files
+// cannot be read, or the graph cannot be parsed.
 #include <algorithm>
 #include <climits>
 #include <cstdio>
