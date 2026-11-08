@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Implementation of H-Td (arXiv:2506.02346).
 //
 // Notation follows the paper:

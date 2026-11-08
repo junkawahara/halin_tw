@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // H-Td: linear-time optimal (width 3) tree decomposition of Halin graphs.
 //   J.A. Alejandro-Soto, J.A. Trejo-Sanchez, C. Segura,
 //   "A Practical Linear Time Algorithm for Optimal Tree Decomposition of

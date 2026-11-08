@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 CXX      ?= g++
 CXXFLAGS ?= -O2 -std=c++17 -Wall -Wextra -pedantic
 BIN      := bin

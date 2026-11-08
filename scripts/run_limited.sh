@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+#
 # Run a command with a 32 GB virtual-memory limit and a 10-minute timeout.
 # Usage: scripts/run_limited.sh <command> [args...]
 set -u

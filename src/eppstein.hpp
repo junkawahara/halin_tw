@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Linear-time Halin graph recognition and tree/cycle decomposition based on
 // the D3 reduction rules of
 //   D. Eppstein, "Simple Recognition of Halin Graphs and Their

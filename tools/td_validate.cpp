@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // td_validate: checks that a PACE 2017 .td file is a valid tree decomposition
 // of a PACE 2017 .gr graph.
 //

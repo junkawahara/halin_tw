@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Implementation of Eppstein's D3-reduction based Halin recognition.
 //
 // Reductions (all three named vertices must have degree three):

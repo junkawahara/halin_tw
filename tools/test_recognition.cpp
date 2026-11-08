@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // test_recognition: randomized cross-check of the Eppstein recognizer and of
 // H-Td against brute force on small graphs.
 //

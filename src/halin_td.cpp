@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // halin_td: reads a Halin graph in PACE 2017 .gr format and writes an optimal
 // (width 3) tree decomposition in PACE 2017 .td format.
 //

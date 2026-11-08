@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Minimal, fast I/O helpers for the PACE 2017 graph (.gr) and tree
 // decomposition (.td) formats.
 #pragma once

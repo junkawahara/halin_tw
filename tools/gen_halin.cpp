@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // gen_halin: random Halin graph generator following Section 6 of
 // arXiv:2506.02346.
 //

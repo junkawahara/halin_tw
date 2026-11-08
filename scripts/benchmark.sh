@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+#
 # Generates the four instance groups of Section 6 of arXiv:2506.02346
 # (10 instances each), runs halin_td on every instance and validates the
 # output. Every program run is limited to 32 GB of memory and 10 minutes.
