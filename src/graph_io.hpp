@@ -127,7 +127,9 @@ inline Graph parseGr(const std::string& data) {
     return g;
 }
 
-// Buffered writer with fast integer formatting.
+// Buffered writer with fast integer formatting. Write errors set the error
+// indicator of the stream; check them with finishOutput() after the Writer
+// has been destroyed.
 class Writer {
 public:
     explicit Writer(FILE* f) : f_(f) { buf_.reserve(kCap + 64); }
@@ -156,5 +158,13 @@ private:
     FILE* f_;
     std::string buf_;
 };
+
+// Flushes f and closes it unless it is stdout. Returns false if any write to
+// f, the final flush or the close failed.
+inline bool finishOutput(FILE* f) {
+    bool ok = std::fflush(f) == 0 && !std::ferror(f);
+    if (f != stdout && std::fclose(f) != 0) ok = false;
+    return ok;
+}
 
 }  // namespace halin

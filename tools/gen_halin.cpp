@@ -109,6 +109,9 @@ int main(int argc, char** argv) {
             w.put(static_cast<long long>(x)); w.put(' '); w.put(static_cast<long long>(y)); w.put('\n');
         }
     }
-    if (out != stdout) std::fclose(out);
+    if (!halin::finishOutput(out)) {
+        std::fprintf(stderr, "error: cannot write %s\n", outPath.empty() ? "stdout" : outPath.c_str());
+        return 1;
+    }
     return 0;
 }

@@ -79,7 +79,10 @@ int main(int argc, char** argv) {
                 w.put(static_cast<long long>(t + 1)); w.put('\n');
             }
         }
-        if (out != stdout) std::fclose(out); else std::fflush(stdout);
+        if (!halin::finishOutput(out)) {
+            std::fprintf(stderr, "error: cannot write %s\n", outPath.empty() ? "stdout" : outPath.c_str());
+            return 1;
+        }
         double tWrite = secondsSince(t3);
 
         if (stats) {
