@@ -4,6 +4,7 @@
 // decomposition (.td) formats.
 #pragma once
 
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
@@ -68,7 +69,12 @@ public:
         if (cur_ >= lineEnd_ || s_[cur_] < '0' || s_[cur_] > '9')
             throw std::runtime_error("line " + std::to_string(lineNo_) + ": expected integer");
         long long x = 0;
-        while (cur_ < lineEnd_ && s_[cur_] >= '0' && s_[cur_] <= '9') x = x * 10 + (s_[cur_++] - '0');
+        while (cur_ < lineEnd_ && s_[cur_] >= '0' && s_[cur_] <= '9') {
+            int d = s_[cur_++] - '0';
+            if (x > (LLONG_MAX - d) / 10)
+                throw std::runtime_error("line " + std::to_string(lineNo_) + ": integer out of range");
+            x = x * 10 + d;
+        }
         if (cur_ < lineEnd_ && !isBlank(s_[cur_]))
             throw std::runtime_error("line " + std::to_string(lineNo_) + ": malformed integer");
         v = neg ? -x : x;
