@@ -33,13 +33,14 @@ void usage(const char* prog) {
 
 int main(int argc, char** argv) {
     std::string inPath, outPath;
-    bool stats = false;
+    bool stats = false, haveInPath = false;
     for (int a = 1; a < argc; ++a) {
         if (!std::strcmp(argv[a], "-o") && a + 1 < argc) outPath = argv[++a];
         else if (!std::strcmp(argv[a], "--stats")) stats = true;
         else if (!std::strcmp(argv[a], "-h") || !std::strcmp(argv[a], "--help")) { usage(argv[0]); return 0; }
         else if (argv[a][0] == '-' && argv[a][1] != 0) { usage(argv[0]); return 1; }
-        else inPath = argv[a];
+        else if (haveInPath) { usage(argv[0]); return 1; }  // only one input file
+        else { inPath = argv[a]; haveInPath = true; }
     }
 
     try {
