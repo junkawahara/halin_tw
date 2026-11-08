@@ -5,7 +5,9 @@
 //
 //   td_validate <graph.gr> <decomposition.td> [--expect-width W]
 //
-// Checks: header consistency, each bag line, decomposition graph is a tree,
+// Checks: the record syntax and order of the PACE 2017 format (the s line,
+// then the b lines, then the tree edges, each with the smaller bag id
+// first), header consistency, each bag line, decomposition graph is a tree,
 // (C1) every vertex is in some bag, (C2) every edge is in some bag,
 // (C3) bags containing a vertex induce a connected subtree, and the declared
 // maximum bag size. Prints "valid width=W" and exits 0 on success, otherwise
@@ -78,6 +80,7 @@ int main(int argc, char** argv) {
     std::vector<int> bagData;
     std::vector<char> bagSeen;
     std::vector<std::pair<int, int>> tedges;
+    bool seenTreeEdge = false;
     std::string tok;
     try {
         while (in.nextLine()) {
@@ -85,8 +88,8 @@ int main(int argc, char** argv) {
             if (c == 0 || c == 'c') continue;
             if (c == 's') {
                 if (numBags >= 0) invalid("duplicate s line");
-                in.nextToken(tok);
-                if (!in.nextToken(tok) || tok != "td") invalid("expected 's td ...'");
+                if (!in.nextToken(tok) || tok != "s" || !in.nextToken(tok) || tok != "td")
+                    invalid("expected 's td ...'");
                 if (!in.nextLong(numBags) || !in.nextLong(declaredMax) || !in.nextLong(declaredN) || !in.atLineEnd())
                     invalid("malformed s line");
                 if (declaredN != g.n) invalid("s line vertex count does not match graph");
@@ -97,7 +100,8 @@ int main(int argc, char** argv) {
             }
             if (numBags < 0) invalid("line before s line");
             if (c == 'b') {
-                in.nextToken(tok);
+                if (!in.nextToken(tok) || tok != "b") invalid("malformed line " + std::to_string(in.lineNo()));
+                if (seenTreeEdge) invalid("bag line " + std::to_string(in.lineNo()) + " after tree edges");
                 long long id;
                 if (!in.nextLong(id) || id < 1 || id > numBags) invalid("bad bag id");
                 if (bagSeen[id - 1]) invalid("bag " + std::to_string(id) + " listed twice");
@@ -114,6 +118,10 @@ int main(int argc, char** argv) {
             long long a, b;
             if (!in.nextLong(a) || !in.nextLong(b) || !in.atLineEnd()) invalid("malformed line " + std::to_string(in.lineNo()));
             if (a < 1 || b < 1 || a > numBags || b > numBags) invalid("tree edge with bad bag id");
+            if (a >= b)
+                invalid("tree edge " + std::to_string(a) + " " + std::to_string(b) +
+                        ": the first bag id must be smaller than the second");
+            seenTreeEdge = true;
             tedges.emplace_back(static_cast<int>(a - 1), static_cast<int>(b - 1));
         }
     } catch (const std::exception& e) {
