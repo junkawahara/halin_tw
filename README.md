@@ -18,6 +18,8 @@ graph, decides whether it is a Halin graph, and if so outputs a width-3 tree
 decomposition. Input and output use the
 [PACE 2017](https://pacechallenge.org/2017/treewidth/) `.gr` / `.td` formats.
 
+All code in this repository was implemented by Claude Opus 5.5.
+
 ## Contents
 
 | Path | Description |
