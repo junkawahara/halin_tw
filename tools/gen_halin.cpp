@@ -13,6 +13,7 @@
 //    are joined, forming the leaf cycle.
 // 5. Vertices are relabelled by a random permutation (edges are shuffled).
 #include <algorithm>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -41,8 +42,11 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "error: Nmin and Nmax must be integers and seed a non-negative integer\n");
         return 1;
     }
-    if (nmin < 3 || nmax < nmin) {
-        std::fprintf(stderr, "error: need 3 <= Nmin <= Nmax\n");
+    // Pendant vertices are added to at most N - 2 tree vertices, so the graph
+    // has n <= 2N - 2 vertices, which must fit in int.
+    constexpr long long kMaxN = INT_MAX / 2;
+    if (nmin < 3 || nmax < nmin || nmax > kMaxN) {
+        std::fprintf(stderr, "error: need 3 <= Nmin <= Nmax <= %lld\n", kMaxN);
         return 1;
     }
     std::mt19937_64 rng(seed);
